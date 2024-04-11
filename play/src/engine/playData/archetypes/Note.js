@@ -54,7 +54,7 @@ export class Note extends Archetype {
         this.targetTime = bpmChanges.at(this.import.beat).time
 
         this.visualTime.max = timeScaleChanges.at(this.targetTime).scaledTime
-        this.visualTime.min = this.visualTime.max - 1
+        this.visualTime.min = this.visualTime.max - 120 / bpmChanges.at(this.import.beat).bpm
 
         this.spawnTime = this.visualTime.min
     }
