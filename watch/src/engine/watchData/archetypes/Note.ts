@@ -9,6 +9,8 @@ export class Note extends Archetype {
 
     import = this.defineImport({
         beat: { name: EngineArchetypeDataName.Beat, type: Number },
+        judgment: { name: EngineArchetypeDataName.Judgment, type: DataType<Judgment> },
+        accuracy: { name: EngineArchetypeDataName.Accuracy, type: Number },
     })
 
     initialized = this.entityMemory(Boolean)
@@ -37,7 +39,23 @@ export class Note extends Archetype {
         this.visualTime.max = timeScaleChanges.at(this.targetTime).scaledTime
         this.visualTime.min = this.visualTime.max - 120 / bpmChanges.at(this.import.beat).bpm
 
-        effect.clips.perfect.schedule(this.targetTime, 0.02)
+        if (replay.isReplay) {
+            const hitTime = this.targetTime + this.import.accuracy
+
+            switch (this.import.judgment) {
+                case Judgment.Perfect:
+                    effect.clips.perfect.schedule(hitTime, 0.02)
+                    break
+                case Judgment.Great:
+                    effect.clips.great.schedule(hitTime, 0.02)
+                    break
+                case Judgment.Good:
+                    effect.clips.good.schedule(hitTime, 0.02)
+                    break
+            }
+        } else {
+            effect.clips.perfect.schedule(this.targetTime, 0.02)
+        }
 
         this.result.time = this.targetTime
     }
@@ -47,7 +65,9 @@ export class Note extends Archetype {
     }
 
     despawnTime() {
-        return this.visualTime.max
+        return replay.isReplay
+            ? timeScaleChanges.at(this.targetTime + this.import.accuracy).scaledTime
+            : this.visualTime.max
     }
 
     initialize() {
@@ -67,6 +87,7 @@ export class Note extends Archetype {
 
     terminate() {
         if (time.skip) return
+        if (replay.isReplay && !this.import.judgment) return
 
         const layout = Rect.one
             .mul(2 * note.radius)
