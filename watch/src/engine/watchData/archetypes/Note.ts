@@ -3,6 +3,8 @@ import { note } from '../note.js'
 import { skin } from '../skin.js'
 
 export class Note extends Archetype {
+    hasInput = true
+
     import = this.defineImport({
         beat: { name: EngineArchetypeDataName.Beat, type: Number },
     })
@@ -32,6 +34,8 @@ export class Note extends Archetype {
 
         this.visualTime.max = timeScaleChanges.at(this.targetTime).scaledTime
         this.visualTime.min = this.visualTime.max - 120 / bpmChanges.at(this.import.beat).bpm
+
+        this.result.time = this.targetTime
     }
 
     spawnTime() {
