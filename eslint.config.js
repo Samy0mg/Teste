@@ -7,6 +7,8 @@ export default [
             '**/*.*',
 
             '!shared/src/**/*.*',
+            'shared/src/level/bgm.mp3',
+            'shared/src/level/cover.jpg',
 
             '!play/src/**/*.*',
 
